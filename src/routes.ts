@@ -9,4 +9,5 @@ export default (app: Express) => {
   });
 
   app.get("/top", LinkController.top);
+  app.post("/short-url", LinkController.shortUrl);
 };
