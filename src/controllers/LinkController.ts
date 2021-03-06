@@ -16,7 +16,7 @@ export default {
     const linkService = new LinkService();
     const { original } = req.body;
 
-    let [link, error] = linkService.buildLink(original);
+    let [link, error] = LinkService.buildLink(original);
 
     if (error) {
       return res.status(400).json({
@@ -36,7 +36,7 @@ export default {
       console.log(err);
       return res.status(500).json({
         link: undefined,
-        error: "Could not create link"
+        error: "Could not create link",
       });
     }
   },

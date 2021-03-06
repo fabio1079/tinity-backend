@@ -17,17 +17,16 @@ describe("LinkController", () => {
   });
 
   test("generate link on POST /short-url", async () => {
-    const ls = new LinkService();
     const original = "https://www.bing.com";
     let response = await request.post("/short-url").send({ original });
 
     expect(response.status).toBe(201);
 
     const { link, error } = response.body;
-    
+
     expect(error).toBe(undefined);
     expect(link).not.toBe(undefined);
-    expect(link.original).toBe(ls.stripUrl(original));
+    expect(link.original).toBe(LinkService.stripUrl(original));
     expect(link.protocol).toBe("https");
     expect(link.shorted).toHaveLength(6);
   });

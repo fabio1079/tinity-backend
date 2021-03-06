@@ -8,39 +8,17 @@ const CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 const getRandomChar = () => {
   let pos = Math.floor(Math.random() * CHARS.length);
   return CHARS[pos];
-}
+};
 
 export default class LinkService {
   constructor(private linkRepository: Repository<Link> = getRepository(Link)) {}
 
-  public stripUrl(url: string): string {
-    if (url.search("https://") === 0) {
-      url = url.slice(8);
-    } else if (url.search("http://") === 0) {
-      url = url.slice(7);
-    }
-
-    if(url.search("www") !== 0) {
-      url = ["www", url].join("");
-    }
-
-    return url;
-  }
-
-  public getProtocol(url: string): string {
-    if (url.search("https://") === 0) {
-      return "https";
-    }
-
-    if (url.search("http://") === 0) {
-      return "http";
-    }
-
-    return "";
+  public async store(link: Link): Promise<Link> {
+    return await this.linkRepository.save(link);
   }
 
   public async firstOriginal(url: string): Promise<Link> {
-    const original = this.stripUrl(url);
+    const original = LinkService.stripUrl(url);
 
     return await this.linkRepository.findOne({ original });
   }
@@ -52,13 +30,39 @@ export default class LinkService {
     });
   }
 
-  public buildLink(url: string): [Link?, string?] {
-    if(!this.urlIsValid(url)) {
+  public static stripUrl(url: string): string {
+    if (url.search("https://") === 0) {
+      url = url.slice(8);
+    } else if (url.search("http://") === 0) {
+      url = url.slice(7);
+    }
+
+    if (url.search("www") !== 0) {
+      url = ["www", url].join("");
+    }
+
+    return url;
+  }
+
+  public static getProtocol(url: string): string {
+    if (url.search("https://") === 0) {
+      return "https";
+    }
+
+    if (url.search("http://") === 0) {
+      return "http";
+    }
+
+    return "";
+  }
+
+  public static buildLink(url: string): [Link?, string?] {
+    if (!LinkService.urlIsValid(url)) {
       return [undefined, "Invalid URL"];
     }
 
-    const original = this.stripUrl(url);
-    const protocol = this.getProtocol(url);
+    const original = LinkService.stripUrl(url);
+    const protocol = LinkService.getProtocol(url);
 
     const link = new Link();
 
@@ -69,18 +73,14 @@ export default class LinkService {
     return [link, undefined];
   }
 
-  public async store(link: Link): Promise<Link> {
-    return await this.linkRepository.save(link);
-  }
-
-  public urlIsValid(url: string): boolean {
+  public static urlIsValid(url: string): boolean {
     return urlSafe({ exact: true, strict: true }).test(url);
   }
 
-  private generateShortedHash(): string {
+  private static generateShortedHash(): string {
     const chars = [];
 
-    for(let i = 0; i < 6; ++i) chars.push(getRandomChar());
+    for (let i = 0; i < 6; ++i) chars.push(getRandomChar());
 
     return chars.join("");
   }
