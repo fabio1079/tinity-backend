@@ -3,6 +3,8 @@ import urlSafe from "url-regex-safe";
 
 import { Link } from "../entity/Link";
 
+export type Builted<T> = [T?, string?];
+
 const CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 const getRandomChar = () => {
@@ -56,7 +58,7 @@ export default class LinkService {
     return "";
   }
 
-  public static buildLink(url: string): [Link?, string?] {
+  public static buildLink(url: string): Builted<Link> {
     if (!LinkService.urlIsValid(url)) {
       return [undefined, "Invalid URL"];
     }

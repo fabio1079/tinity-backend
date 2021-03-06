@@ -16,6 +16,15 @@ export default {
     const linkService = new LinkService();
     const { original } = req.body;
 
+    const storedLink = await linkService.firstOriginal(original);
+
+    if (storedLink) {
+      return res.status(200).json({
+        link: storedLink,
+        error: undefined,
+      });
+    }
+
     let [link, error] = LinkService.buildLink(original);
 
     if (error) {
