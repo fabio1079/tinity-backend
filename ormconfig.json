@@ -1,6 +1,6 @@
 {
    "type": "better-sqlite3",
-   "database": "database.sqlite",
+   "database": "db/database.development.sqlite",
    "synchronize": true,
    "logging": true,
    "entities": [

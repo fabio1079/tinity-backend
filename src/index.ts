@@ -1,18 +1,17 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
+
+import connection from "./config/connection";
 
 import app from "./config/app";
-import morgan from "./config/morgan";
-import routes from "./routes";
-
-morgan(app);
-routes(app);
+import settupApp from "./config/settup-app";
 
 const PORT = process.env.PORT || 3001;
 
-createConnection()
+connection
+  .create()
   .then(async (connection) => {
     let testCon = await connection.query("select 1");
+    settupApp(app);
 
     app.listen(PORT, () => {
       console.log(testCon);
