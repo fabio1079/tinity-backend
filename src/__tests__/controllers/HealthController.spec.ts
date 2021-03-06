@@ -17,7 +17,7 @@ describe("HealthController", () => {
   test("it is alive on GET /health", async () => {
     const response = await request.get("/health");
 
-    expect(response.statusCode).toBe(200);
+    expect(response.status).toBe(200);
     expect(response.body.status).toBe("alive");
   });
 });
