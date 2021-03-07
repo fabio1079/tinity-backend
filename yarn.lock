@@ -693,6 +693,11 @@
   dependencies:
     "@types/superagent" "*"
 
+"@types/url-regex-safe@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/url-regex-safe/-/url-regex-safe-1.0.0.tgz#78d0742fbc0438ab5805ae12ddb7ed0cf5daf493"
+  integrity sha512-4ktZEdl4U+ETSm8asxGDLsveKH2vl+9+d8NWYuvmI2YfCtpkNG+XffjoD9vtduPdHWJEr+VFet6r3F57Y9oTww==
+
 "@types/yargs-parser@*":
   version "20.2.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-20.2.0.tgz#dd3e6699ba3237f0348cd085e4698780204842f9"

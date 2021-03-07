@@ -58,6 +58,37 @@ describe("LinkController", () => {
     expect(link.shorted).toBe(storedLink.shorted);
   });
 
+  test("wont generate a link from an invalid url", async () => {
+    const invalidUrls = [
+      "www.foufos-.gr",
+      "www.-foufos.gr",
+      "foufos.gr",
+      "http://foufos",
+      "www.mp3#.com",
+    ];
+
+    for (let url of invalidUrls) {
+      let response = await request.post("/short-url").send({ original: url });
+      const { link, error } = response.body;
+
+      expect(response.status).toBe(400);
+      expect(link).toBe(undefined);
+      expect(error).not.toBe(undefined);
+      expect(error).toBe("Invalid URL");
+    }
+  });
+
+  test("will add www if given url dont have it after protocol", async () => {
+    const original = "https://someurl.com";
+
+    let response = await request.post("/short-url").send({ original });
+    const { link, error } = response.body;
+
+    expect(response.status).toBe(201);
+    expect(error).toBe(undefined);
+    expect(link.original).toBe("www.someurl.com");
+  });
+
   test("Will redirect user on GET /:shorted", async () => {
     const original = "http://www.testing.com.br";
     const link = await storeLink(original);

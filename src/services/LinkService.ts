@@ -44,7 +44,7 @@ export default class LinkService {
     }
 
     if (url.search("www") !== 0) {
-      url = ["www", url].join("");
+      url = ["www.", url].join("");
     }
 
     return url;
