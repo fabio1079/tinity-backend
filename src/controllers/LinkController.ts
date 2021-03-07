@@ -16,7 +16,7 @@ export default {
     const linkService = new LinkService();
     const { original } = req.body;
 
-    const storedLink = await linkService.firstOriginal(original);
+    const storedLink = await linkService.findOriginal(original);
 
     if (storedLink) {
       return res.status(200).json({
@@ -48,5 +48,30 @@ export default {
         error: "Could not create link",
       });
     }
+  },
+
+  async redirectToOriginal(req: Request, res: Response) {
+    const { shorted } = req.params;
+
+    if (!shorted || shorted.length !== 6) {
+      return res.status(500).json({
+        error: "Invalid shorted link",
+      });
+    }
+
+    const linkService = new LinkService();
+    const link = await linkService.findShorted(shorted);
+
+    if (!link) {
+      return res.status(404).json({
+        link: undefined,
+        error: "Link not found",
+      });
+    }
+
+    link.accessed += 1;
+    await linkService.store(link);
+
+    return res.status(302).redirect(LinkService.redirectionUrl(link));
   },
 };

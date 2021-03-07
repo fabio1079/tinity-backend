@@ -19,10 +19,14 @@ export default class LinkService {
     return await this.linkRepository.save(link);
   }
 
-  public async firstOriginal(url: string): Promise<Link> {
+  public async findOriginal(url: string): Promise<Link> {
     const original = LinkService.stripUrl(url);
 
     return await this.linkRepository.findOne({ original });
+  }
+
+  public async findShorted(shorted: string): Promise<Link> {
+    return await this.linkRepository.findOne({ shorted });
   }
 
   public async getTop(): Promise<Link[]> {
@@ -85,5 +89,9 @@ export default class LinkService {
     for (let i = 0; i < 6; ++i) chars.push(getRandomChar());
 
     return chars.join("");
+  }
+
+  public static redirectionUrl(link: Link): string {
+    return [link.protocol, "://", link.original].join("");
   }
 }
