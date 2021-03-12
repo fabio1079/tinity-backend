@@ -1,9 +1,9 @@
 import { getRepository, Repository } from "typeorm";
 import urlSafe from "url-regex-safe";
 
+import Result from "../error/Result";
+import { INVALID_URL } from "../error/messages";
 import { Link } from "../entity/Link";
-
-export type Builted<T> = [T?, string?];
 
 const CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -62,9 +62,10 @@ export default class LinkService {
     return "";
   }
 
-  public static buildLink(url: string): Builted<Link> {
+  public static buildLink(url: string): Result<Link> {
     if (!LinkService.urlIsValid(url)) {
-      return [undefined, "Invalid URL"];
+
+      return Result.fail(INVALID_URL);
     }
 
     const original = LinkService.stripUrl(url);
@@ -76,7 +77,7 @@ export default class LinkService {
     link.protocol = protocol;
     link.shorted = this.generateShortedHash();
 
-    return [link, undefined];
+    return Result.ok(link);
   }
 
   public static urlIsValid(url: string): boolean {

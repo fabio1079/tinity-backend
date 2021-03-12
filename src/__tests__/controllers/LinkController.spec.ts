@@ -3,17 +3,21 @@ import { request } from "../helpers";
 
 import { Link } from "../../entity/Link";
 import LinkService from "../../services/LinkService";
-import { url } from "node:inspector";
-import { UsingJoinColumnOnlyOnOneSideAllowedError } from "typeorm";
+
+import {
+  INVALID_SHORTED,
+  INVALID_URL,
+  LINK_NOT_FOUND,
+} from "../../error/messages";
 
 const storeLink = async (url: string): Promise<Link> => {
-  let [link, error] = LinkService.buildLink(url);
+  let result = LinkService.buildLink(url);
 
-  if (error) throw new Error(error);
+  if (result.isFailure) throw new Error(result.error as string);
 
   let ls = new LinkService();
 
-  return await ls.store(link);
+  return await ls.store(result.value);
 };
 
 describe("LinkController", () => {
@@ -74,7 +78,7 @@ describe("LinkController", () => {
       expect(response.status).toBe(400);
       expect(link).toBe(undefined);
       expect(error).not.toBe(undefined);
-      expect(error).toBe("Invalid URL");
+      expect(error).toBe(INVALID_URL);
     }
   });
 
@@ -120,14 +124,14 @@ describe("LinkController", () => {
     const response = await request.get(`/aaaaaa`);
 
     expect(response.status).toBe(404);
-    expect(response.body.error).toBe("Link not found");
+    expect(response.body.error).toBe(LINK_NOT_FOUND);
   });
 
   test("wont allow infalid shorted links", async () => {
     const response = await request.get(`/1234567`); // len 7
 
     expect(response.status).toBe(500);
-    expect(response.body.error).toBe("Invalid shorted link");
+    expect(response.body.error).toBe(INVALID_SHORTED);
   });
 
   test("get top 5 most accessed links on GET /top", async () => {

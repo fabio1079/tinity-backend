@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import LinkService from "../services/LinkService";
 
+import {
+  CANT_CREATE_LINK,
+  INVALID_SHORTED,
+  LINK_NOT_FOUND,
+} from "../error/messages";
+
 export default {
   async top(req: Request, res: Response) {
     const linkService = new LinkService();
@@ -25,17 +31,17 @@ export default {
       });
     }
 
-    let [link, error] = LinkService.buildLink(original);
+    let result = LinkService.buildLink(original);
 
-    if (error) {
+    if (result.isFailure) {
       return res.status(400).json({
         link: undefined,
-        error,
+        error: result.error,
       });
     }
 
     try {
-      link = await linkService.store(link);
+      let link = await linkService.store(result.value);
 
       return res.status(201).json({
         link,
@@ -45,7 +51,7 @@ export default {
       console.log(err);
       return res.status(500).json({
         link: undefined,
-        error: "Could not create link",
+        error: CANT_CREATE_LINK,
       });
     }
   },
@@ -55,7 +61,7 @@ export default {
 
     if (!shorted || shorted.length !== 6) {
       return res.status(500).json({
-        error: "Invalid shorted link",
+        error: INVALID_SHORTED,
       });
     }
 
@@ -65,7 +71,7 @@ export default {
     if (!link) {
       return res.status(404).json({
         link: undefined,
-        error: "Link not found",
+        error: LINK_NOT_FOUND,
       });
     }
 
